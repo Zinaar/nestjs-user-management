@@ -1,7 +1,8 @@
 export default () => {
   return {
     database: {
-      uri: process.env.DB_URI,
+      uri:
+        process.env.TEST === 'true' ? process.env.DB_TEST : process.env.DB_URI,
     },
     aws: {
       services: {

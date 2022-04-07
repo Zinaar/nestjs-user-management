@@ -54,11 +54,12 @@ export class UserRepository {
   }
 
   async softDelete(username: string): Promise<IUsers> {
-    return this.userModel.findOneAndUpdate({
-      username,
-      is_deleted: true,
-      deletedAt: Date.now(),
-    });
+    return this.userModel.findOneAndUpdate(
+      {
+        username,
+      },
+      { is_deleted: true, deletedAt: Date.now() },
+    );
   }
 
   async updateUser(

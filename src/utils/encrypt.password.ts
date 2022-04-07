@@ -15,7 +15,6 @@ export class EncryptPassword {
       100,
       'sha512',
     );
-
     return [hashedPassword.toString('hex'), salt].join('.');
   }
 }

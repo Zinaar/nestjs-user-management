@@ -21,7 +21,9 @@ export class UserService {
   }
 
   async findUser(username: string): Promise<IUsers> {
-    return this.userRepository.findUser(username);
+    const user = await this.userRepository.findUser(username);
+    if (!user) throw new Error('User does not exist');
+    return user;
   }
 
   async checkUser(username: string): Promise<IUsers> {
@@ -37,19 +39,20 @@ export class UserService {
   }
 
   async updateUser(user: UpdateUserDto, username: string): Promise<IUsers> {
-    const password = await this.encryptPassword.hashPassword(user.password);
     const userUpdate = {
-      password,
       firstname: user.firstname,
       lastname: user.lastname,
     };
+    if (user.password) {
+      const password = await this.encryptPassword.hashPassword(user.password);
+      Object.assign(userUpdate, { password });
+    }
 
     return this.userRepository.updateUser(username, userUpdate);
   }
-  async addAvatarImage(username: string, url: string): Promise<any> {
+  async addAvatarImage(username: string, url: string): Promise<IUsers> {
     const user = await this.userRepository.checkUser(username);
     if (!user || user.avatar) return;
-    await this.userRepository.addAvatarUrl(username, url);
-    return;
+    return this.userRepository.addAvatarUrl(username, url);
   }
 }

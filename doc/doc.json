@@ -1,0 +1,768 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "This is a simple user management application with role and vote system implemented",
+    "version": "1.0.0",
+    "title": "User Management"
+  },
+  "tags": [
+    {
+      "name": "user",
+      "description": "Operations about user"
+    },
+    {
+      "name": "vote",
+      "description": "Operations about votes"
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/user/signup": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Creates a new user",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "successfull account creation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateUserSuccess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Username already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateUserErrors"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/find": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Find user with username in database",
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "username",
+            "description": "username you want to find",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successfully getting user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindUserDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "user doesn't exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateUserErrors"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/findall": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Retreives list of users",
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "skip",
+            "description": "The number of users to skip",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": 1
+                }
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "The numbers of users to return",
+            "schema": {
+              "type": "string",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successfully getting users list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindAllUsers"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "something went wrong",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "default": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "default": "bad request"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Logs user into the system",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLogin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserLoginSuccess"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid username/password supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "default": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "default": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/update": {
+      "put": {
+        "tags": [
+          "user"
+        ],
+        "summary": "updates logged in user, admin can update any user",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "username",
+            "description": "admin should provide username which should be updated",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserUpdateSuccess"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid username/password supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "default": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "default": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/delete": {
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "deletes user",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "username",
+            "required": true,
+            "description": "admin should provide username which should be deleted",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindUserDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "default": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "default": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vote/process": {
+      "post": {
+        "tags": [
+          "vote"
+        ],
+        "summary": "Creates a new vote",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessVoteDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "user voted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "user voted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Username already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "default": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "default": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vote/update": {
+      "put": {
+        "tags": [
+          "vote"
+        ],
+        "summary": "Creates a new vote",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessVoteDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "vote updated succesfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "vote updated succesfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Username already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "default": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "default": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vote/delete": {
+      "delete": {
+        "tags": [
+          "vote"
+        ],
+        "summary": "deletes vote",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "username",
+            "required": true,
+            "description": "sender's username should be put here",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "toUsername": {
+                      "type": "string",
+                      "example": "dimulia"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "default": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "default": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateUserDTO": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 8,
+            "example": "givia"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 12,
+            "example": "dimadimulia007"
+          },
+          "firstname": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 12,
+            "example": "givi"
+          },
+          "lastname": {
+            "type": "string",
+            "maxLength": 12,
+            "example": "smith"
+          }
+        },
+        "required": [
+          "username",
+          "password",
+          "firstname"
+        ]
+      },
+      "CreateUserSuccess": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "string",
+            "example": "User {username} successfully registered!"
+          },
+          "status": {
+            "type": "number",
+            "example": 201
+          },
+          "message": {
+            "type": "string",
+            "example": "User {username} successfully registered!"
+          },
+          "name": {
+            "type": "string",
+            "example": "HttpException"
+          }
+        }
+      },
+      "CreateUserErrors": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "example": 400
+          },
+          "message": {
+            "type": "string",
+            "example": "Username already exists"
+          }
+        }
+      },
+      "FindUserDTO": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "object",
+            "example": {
+              "message": "success message"
+            }
+          },
+          "status": {
+            "type": "number",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "Http Exception"
+          },
+          "name": {
+            "type": "string",
+            "example": "HttpException"
+          }
+        }
+      },
+      "FindAllUsers": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "status": {
+            "type": "number",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "Http Exception"
+          },
+          "name": {
+            "type": "string",
+            "example": "HttpException"
+          }
+        }
+      },
+      "UserLogin": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "dimulia"
+          },
+          "password": {
+            "type": "string",
+            "example": "gijivit"
+          }
+        }
+      },
+      "UserLoginSuccess": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "object",
+            "example": {
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlZHVuaWExIiwicm9sZSI6ImJhc2ljIiwiaWF0IjoxNjQ5MTU4MDg4LCJleHAiOjE2NDkyNDQ0ODh9.TPkJRlbeHlK-kOjyqbggtBTXHbjH4M8Jn7xgqgpRbTc"
+            }
+          },
+          "status": {
+            "type": "number",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "Http Exception"
+          },
+          "name": {
+            "type": "string",
+            "example": "HttpException"
+          }
+        }
+      },
+      "UserUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 12,
+            "example": "dimadimulia007"
+          },
+          "firstname": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 12,
+            "example": "givi"
+          },
+          "lastname": {
+            "type": "string",
+            "maxLength": 12,
+            "example": "smith"
+          }
+        }
+      },
+      "UserUpdateSuccess": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "number",
+            "example": "624a91765a36cf715ebf8e32"
+          },
+          "username": {
+            "type": "string",
+            "example": "tedunia1"
+          },
+          "password": {
+            "type": "string",
+            "example": "9d6e586caf695e8a3f9c5d98b9631435c0c1356963cc9d4a3e497b30573220402399adb7c3c98eb27f729b8efe51c0b639370fe0b50bedb63430175a9f2d47457af1c9fb8a5a8a293362bedf5c48506115f6e053fb00ce0666e4806a426ae162056b6b83.ba162202ce7d4335f41b76d355d7078d"
+          },
+          "firstname": {
+            "type": "string",
+            "example": "gelusha"
+          },
+          "lastname": {
+            "type": "string",
+            "example": "geluashvili"
+          },
+          "role": {
+            "type": "string",
+            "example": "basic"
+          },
+          "is_deleted": {
+            "type": "boolean",
+            "example": false
+          },
+          "deletedAt": {
+            "type": "string",
+            "example": null
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2022-04-04T06:34:30.964Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2022-04-04T06:34:30.964Z"
+          },
+          "__v": {
+            "type": "number",
+            "example": 0
+          }
+        }
+      },
+      "ProcessVoteDTO": {
+        "type": "object",
+        "properties": {
+          "fromUsername": {
+            "type": "string",
+            "example": "dimulia"
+          },
+          "toUsername": {
+            "type": "string",
+            "example": "tedunia"
+          },
+          "vote": {
+            "type": "number",
+            "enum": [
+              -1,
+              1
+            ]
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}

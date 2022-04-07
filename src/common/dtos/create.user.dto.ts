@@ -1,4 +1,10 @@
-import { IsOptional, IsString, Length, Matches } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+  MaxLength,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDTO {
@@ -16,6 +22,7 @@ export class CreateUserDTO {
 
   @IsString()
   @IsOptional()
+  @MaxLength(12)
   lastname?: string;
 
   @IsString()

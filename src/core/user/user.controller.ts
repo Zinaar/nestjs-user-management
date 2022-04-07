@@ -12,15 +12,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { RolesGuard, LocalAuthGuard, JwtAuthGuard } from 'src/auth/guards';
-import { Roles } from 'src/auth/decorators/role.decorator';
-import { Role } from 'src/auth/enums/role.enum';
+import { RolesGuard, LocalAuthGuard, JwtAuthGuard } from '../../auth/guards';
+import { Roles } from '../../auth/decorators/role.decorator';
+import { Role } from '../../auth/enums/role.enum';
 import { UpdateUserDto, CreateUserDTO, PaginationDTO } from '../../common/dtos';
 import { UserService } from './user.service';
-import { UpdateGuard } from 'src/common/guards/user.update.guard';
-import { UpdateInterceptor } from 'src/common/interceptors/user.update.interceptor';
-import { IUsers } from 'src/common/interfaces';
-import { ApiQuery } from '@nestjs/swagger';
+import { UpdateGuard } from '../../common/guards/user.update.guard';
+import { UpdateInterceptor } from '../../common/interceptors/user.update.interceptor';
+import { IUsers } from '../../common/interfaces';
 
 @Controller('user')
 export class UserController {
@@ -32,7 +31,6 @@ export class UserController {
   ): Promise<HttpException> {
     try {
       await this.usersService.createUser(user);
-
       return new HttpException(
         `User ${user.username} successfully registered!`,
         HttpStatus.CREATED,
@@ -43,7 +41,7 @@ export class UserController {
   }
   @Get('find')
   async findUserController(
-    @Body('username') username: string,
+    @Query('username') username: string,
   ): Promise<HttpException> {
     try {
       const user = await this.usersService.findUser(username);
@@ -65,8 +63,12 @@ export class UserController {
     }
   }
 
+  @Roles(Role.Admin || Role.Basic)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('delete')
-  async softDelete(@Body('username') username: string): Promise<HttpException> {
+  async softDelete(
+    @Query('username') username: string,
+  ): Promise<HttpException> {
     try {
       await this.usersService.softDelete(username);
       return new HttpException(
@@ -91,7 +93,6 @@ export class UserController {
   @Roles(Role.Admin || Role.Basic)
   @UseGuards(JwtAuthGuard, RolesGuard, UpdateGuard)
   @UseInterceptors(new UpdateInterceptor())
-  @ApiQuery({ name: 'role', enum: Role })
   @Put('update')
   async updateUser(
     @Body() user: UpdateUserDto,
@@ -99,7 +100,6 @@ export class UserController {
   ): Promise<IUsers> {
     try {
       const updatedUser = await this.usersService.updateUser(user, username);
-      // return new HttpException(`user succesfully updated`, HttpStatus.OK);
       return updatedUser;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
