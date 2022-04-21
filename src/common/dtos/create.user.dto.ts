@@ -5,7 +5,6 @@ import {
   Matches,
   MaxLength,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDTO {
   @IsString()
@@ -28,6 +27,5 @@ export class CreateUserDTO {
   @IsString()
   @IsOptional()
   @Matches(/basic|admin/)
-  @ApiProperty({ enum: ['basic', 'admin'] })
   role?: 'basic' | 'admin';
 }

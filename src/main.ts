@@ -9,6 +9,7 @@ async function bootstrap() {
 
   app.use('/api', serve);
   app.use('/api', setup(doc));
+  app.enableCors({ origin: '*' });
 
   app.useGlobalPipes(
     new ValidationPipe({
